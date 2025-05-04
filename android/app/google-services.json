@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "963645050762",
+    "project_id": "abstask-9bba7",
+    "storage_bucket": "abstask-9bba7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963645050762:android:9e05aea315a4740fd58273",
+        "android_client_info": {
+          "package_name": "com.example.abs_task"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTjLFmxZJtRASomsq0cJp6W0_ByEGIfZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
