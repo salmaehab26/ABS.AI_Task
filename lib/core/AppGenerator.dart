@@ -10,7 +10,7 @@ class RoutesGenerator {
       case AppRoutes.homeScreen:
         return MaterialPageRoute(builder: (_) => HomeScreen());
       case AppRoutes.Login:
-        return MaterialPageRoute(builder: (_) => LogIn());
+        return MaterialPageRoute(builder: (_) => LoginScreen());
       default:
         return unDefinedRoute();
     }

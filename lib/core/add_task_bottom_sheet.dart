@@ -1,13 +1,17 @@
 
 
+import 'package:abs_task/features/home/cubit/homeViewModel.dart';
 import 'package:abs_task/features/home/model/homeFirebase.dart';
 import 'package:abs_task/features/notes/model/NoteModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
+
+
   @override
   State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
 }
@@ -17,12 +21,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   var formKey = GlobalKey<FormState>();
   String title = '';
   String description = '';
-
-  // late ListProvider listProvider;
-
+HomeViewModel viewModel=HomeViewModel();
   @override
   Widget build(BuildContext context) {
-    // listProvider = Provider.of<ListProvider>(context);
     return Container(
       padding: EdgeInsets.all(12),
       child: Column(
@@ -86,21 +87,16 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       ),
     );
   }
-
-
-
-  void addTask()async {
-    if (formKey.currentState?.validate() == true) {
-      final String? userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) {
-        return;
-      }
+  void addTask()  {
+    if (formKey.currentState!.validate()) {
       NoteModel note = NoteModel(
         title: title,
         description: description,
-
+        userId: FirebaseAuth.instance.currentUser!.uid,
       );
-    NotesFirebase.addnoteToFireStore(note,userId);
+      viewModel.addNote(note);
+      context.read<HomeViewModel>().getAllNotes();
+      Navigator.pop(context);
     }
   }
 }

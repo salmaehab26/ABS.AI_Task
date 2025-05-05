@@ -1,49 +1,65 @@
+import 'dart:async';
+
+import 'package:abs_task/features/home/cubit/homeStates.dart';
+import 'package:abs_task/features/home/cubit/homeStates.dart';
 import 'package:abs_task/features/home/model/homeFirebase.dart';
-import 'package:abs_task/features/notes/cubit/NoteStates.dart';
 import 'package:abs_task/features/notes/model/NoteModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class homeViewModel extends Cubit<NoteStates> {
-  homeViewModel() : super(initStateNoteState());
+class HomeViewModel extends Cubit<HomeStates> {
+  HomeViewModel() : super(initStateHomeState());
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  HomeFirebase firebase = HomeFirebase();
+  List<NoteModel> notesList = [];
+  StreamController<List<NoteModel>> notes = StreamController.broadcast();
 
-  void getAllNotes() {
-    emit(loadingStateNoteState());
+  Future<void> getAllNotes() async {
+    emit(getNotesloadingStateHomeState());
+    try {
+      QuerySnapshot<NoteModel> querySnapshot =
+          await firebase.getNotesCollection(userId!).get();
 
-    NotesFirebase.getNotes(userId!).listen(
-      (QuerySnapshot<NoteModel> snapshot) {
-        List<NoteModel> noteList = snapshot.docs.map((e) => e.data()).toList();
-        emit(succesStateNoteState(noteModel: noteList));
-      },
-      onError: (error) {
-        emit(errorStateNoteState(error: error.toString()));
-      },
-    );
+      notesList =
+          querySnapshot.docs.map((doc) {
+            return doc.data();
+          }).toList();
+      notes.add(notesList);
+      emit(getNotessuccesStateHomeState(noteModel: notesList));
+    } catch (e) {
+      emit(getNoteserrorStateHomeState(error: e.toString()));
+    }
   }
 
   Future<void> addNote(NoteModel note) async {
+    emit(addNoteloadingStateHomeState());
+
     try {
-      await NotesFirebase.addnoteToFireStore(note,userId!);
-      print('Task added successfully');
+      await firebase.addnoteToFireStore(note, userId!);
+      getAllNotes();
+      emit(addNotesuccesStateHomeState(succesM: "note add succesfully"));
     } catch (e) {
-      print('Error adding task: $e');
+      emit(addNoteerrorStateHomeState(error: e.toString()));
     }
   }
+
   Future<void> deleteNote(String noteId) async {
+    emit(getNotesloadingStateHomeState());
     try {
-      await NotesFirebase.deleteNote(noteId,userId!);
+      await firebase.deleteNote(noteId, userId!);
       getAllNotes();
+      emit(getNotesupdateStateHomeState());
     } catch (e) {
-      emit(errorStateNoteState(error: e.toString()));
+      emit(getNoteserrorStateHomeState(error: e.toString()));
     }
-  }Future<void> updatenote(NoteModel noteId) async {
+  }
+
+  Future<void> updatenote(NoteModel noteId) async {
     try {
-      await NotesFirebase.updatenote(noteId,userId!);
+      await firebase.updatenote(noteId, userId!);
     } catch (e) {
-      emit(errorStateNoteState(error: e.toString()));
+      emit(getNoteserrorStateHomeState(error: e.toString()));
     }
   }
 }

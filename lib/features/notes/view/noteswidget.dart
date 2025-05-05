@@ -20,29 +20,29 @@ class _NoteWidgetState extends State<NoteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<homeViewModel>();
+    final viewModel = context.read<HomeViewModel>();
     return Container(
       height: 100.h,
-      width: 270.w,
+      width: 350.w,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
         border: Border.all(color: AppColors.primaryColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.note.title!),
+                Text(widget.note.title!,style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold ),),
                 Container(
                   child: Row(
                     children: [
                       IconButton(onPressed: () {
                         viewModel.deleteNote(widget.note.id!
                         );
-                      }, icon: Icon(CupertinoIcons.delete)
-                      ),  IconButton(onPressed: () { }, icon: Icon(Icons.edit)
+                      }, icon: Icon(CupertinoIcons.delete,color: AppColors.greyColor,size:15 ,)
+                      ),  IconButton(onPressed: () { }, icon: Icon(Icons.edit,color: AppColors.greyColor,size:15 ,)
                       ),
                     ],
                   ),

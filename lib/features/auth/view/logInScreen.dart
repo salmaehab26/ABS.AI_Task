@@ -1,60 +1,43 @@
 import 'package:abs_task/core/AppRoutes.dart';
-import 'package:abs_task/core/dialog_utils.dart';
 import 'package:abs_task/core/my_colors.dart';
 import 'package:abs_task/core/text_field_item.dart';
-import 'package:abs_task/features/auth/cubit/AuthState.dart';
 import 'package:abs_task/features/auth/cubit/AuthViewModel.dart';
-import 'package:abs_task/features/auth/model/user.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:abs_task/features/auth/cubit/AuthState.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LogIn extends StatefulWidget {
-  const LogIn({super.key});
-
-  @override
-  State<LogIn> createState() => _LogInState();
-}
-
-class _LogInState extends State<LogIn> {
-  var loginViewModel = AuthViewModel();
+class LoginScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: loginViewModel,
-      listener: (context, state) {
-        if (state is loadingStateUserState) {
-          return DialogUtil.showLoading(context, "Loading...");
-        } else if (state is errorStateUserState) {
-          DialogUtil.hideLoading(context);
-          return DialogUtil.showMessage(
-            context,
-            state.error.toString(),
-            title: "Error",
-          );
-        } else if (state is succesStateUserState) {
-          DialogUtil.hideLoading(context);
-          Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
-        }
-      },
-      child: Scaffold(
-        body: Center(
+    return Scaffold(
+      appBar: AppBar(title: Text("Login")),
+      body: BlocListener<AuthViewModel, UserStates>(
+        listener: (context, state) {
+          if (state is succesStateUserState) {
+            Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
+          } else if (state is errorStateUserState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          }
+        },
+        child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+
               children: [
-                Text(
-                  'ABS.AI Notes',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-                SizedBox(height: 8),
+              Text(
+              'ABS.AI Notes',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),),
+                SizedBox(height: 8.h),
                 Text(
                   'Welcome back! Please login to your account.',
                   style: TextStyle(fontSize: 16),
@@ -65,7 +48,7 @@ class _LogInState extends State<LogIn> {
                   child: Column(
                     children: [
                       CustomTextFormField(
-                        controller: loginViewModel.emailController,
+                        controller: emailController,
                         borderColor: AppColors.primaryColor,
 
                         hintText: 'Email address',
@@ -74,7 +57,7 @@ class _LogInState extends State<LogIn> {
                       SizedBox(height: 16),
                       CustomTextFormField(
                         borderColor: AppColors.primaryColor,
-                        controller: loginViewModel.passwordController,
+                        controller: passwordController,
                         hintText: 'Enter your password',
                         prefixIcon: Icon(Icons.lock),
                         suffixIcon: Icon(Icons.visibility),
@@ -94,21 +77,20 @@ class _LogInState extends State<LogIn> {
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    loginViewModel.login(
-                      loginViewModel.emailController.text,
-                      loginViewModel.passwordController.text,
-                    );
+                    final email = emailController.text.trim();
+                    final password = passwordController.text.trim();
+                    context.read<AuthViewModel>().login(email, password);
+
                   },
-                  child: Text('Log In'),
+                  child: Text("Log In"),
                 ),
-                SizedBox(height: 16),
-                Text('Or'),
-                SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {},
-                  child: Text('Do not have an account? Register now'),
-                ),
-              ],
+            SizedBox(height: 16),
+            Text('Or'),
+            SizedBox(height: 16),
+            TextButton(
+              onPressed: () {},
+              child: Text('Do not have an account? Register now'),
+            ) ],
             ),
           ),
         ),

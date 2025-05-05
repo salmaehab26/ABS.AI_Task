@@ -2,32 +2,39 @@ import 'package:abs_task/features/auth/model/user.dart';
 import 'package:abs_task/features/notes/model/NoteModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class NotesFirebase{
 
-  static CollectionReference<NoteModel> getNotesCollection(String uId) {
-      return getUsersCollection()
+class HomeFirebase {
+   CollectionReference<NoteModel> getNotesCollection(String uId) {
+    return FirebaseFirestore.instance
+        .collection("Users")
         .doc(uId)
         .collection("Notes")
         .withConverter<NoteModel>(
-        fromFirestore: (snapshot, options) =>
-            NoteModel.fromJson(snapshot.data()!),
-        toFirestore: (note, options) => note.toJson());
+      fromFirestore: (snapshot, _) => NoteModel.fromJson(snapshot.data()!),
+      toFirestore: (note, _) => note.toJson(),
+    );
   }
 
-  static Future<void> addnoteToFireStore(NoteModel note, String uId) {
-    var taskCollection = getNotesCollection(uId);// collection
-    var docRef = taskCollection.doc();// document
+   Future<void> addnoteToFireStore(NoteModel note, String uId) async {
+    var taskCollection = getNotesCollection(uId);
+    var docRef = taskCollection.doc();
     note.id = docRef.id;
-    return docRef.set(note);
+    await docRef.set(note);
   }
 
-  static Stream<QuerySnapshot<NoteModel>> getNotes( String uId) {
+   Stream<QuerySnapshot<NoteModel>> getNotes(String uId) {
     return getNotesCollection(uId).snapshots();
   }
-  static Future<void> updatenote(NoteModel note, String uId) {
+  //
+  //  Stream<QuerySnapshot<Map<String, dynamic>>> getAllNotes() {
+  //   return FirebaseFirestore.instance.collectionGroup("Notes").snapshots();
+  // }
+
+
+   Future<void> updatenote(NoteModel note, String uId) {
     return getNotesCollection(uId).doc(note.id).update(note.toJson());
   }
-  static Future<void> deleteNote(String id, String uId) {
+   Future<void> deleteNote(String id, String uId) {
     return getNotesCollection(uId).doc(id).delete();
   }
   static CollectionReference<MyUser> getUsersCollection() {
