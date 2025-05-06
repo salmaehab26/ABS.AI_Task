@@ -1,5 +1,5 @@
 import 'package:abs_task/core/SideBar.dart';
-import 'package:abs_task/core/add_task_bottom_sheet.dart';
+import 'package:abs_task/core/Note_bottom_sheet.dart';
 import 'package:abs_task/core/dialog_utils.dart';
 import 'package:abs_task/core/my_colors.dart';
 import 'package:abs_task/features/home/cubit/homeStates.dart';
@@ -21,11 +21,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final HomeViewModel viewModel = HomeViewModel();
+  // final HomeViewModel viewModel = HomeViewModel();
 
   @override
   Widget build(BuildContext context) {
-    viewModel.getAllNotes();
+    // viewModel.getAllNotes();
 
     return Scaffold(
       appBar: AppBar(
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: AppColors.primaryColor,
               minimumSize: Size(60.w, 30.h),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             onPressed: () {},
@@ -51,84 +51,98 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             onPressed: () {},
-            icon: Icon(CupertinoIcons.profile_circled),
+            icon: Icon(CupertinoIcons.profile_circled,size: 35,),
           ),
         ],
       ),
-      body: BlocBuilder<HomeViewModel, HomeStates>(
-        bloc: viewModel,
-        builder: (context, state) {
-          if (state is addNoteloadingStateHomeState)
-            CircularProgressIndicator();
-          else if (state is addNoteerrorStateHomeState)
-            DialogUtil.showMessage(context, state.error.toString());
-          else if (state is addNotesuccesStateHomeState)
-            DialogUtil.showMessage(context, "note addes succesfully");
-
-          return Row(
-            children: [
-              SideBar(),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Welcome back, Emily Johnson"),
-                      Text("You have 12 notes in your workspace"),
-                      SizedBox(height: 30.h),
-                      Container(
-                        width: 200.w,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            isDense: true,
-                            hintText: "search notes..",
-                            hintStyle: TextStyle(color: AppColors.greyColor),
-                            focusColor: AppColors.primaryColor,
-                            prefixIcon: Icon(
-                              CupertinoIcons.search,
-                              color: AppColors.greyColor,
-                            ),
+      body:Container(
+        color: Colors.grey[50],
+        child: Row(
+          children: [
+            SideBar(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Welcome back,",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text("You have  notes in your workspace"),
+                    SizedBox(height: 30.h),
+                    Container(
+                      width: 200.w,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          isDense: true,
+                          hintText: "search notes..",
+                          hintStyle: TextStyle(color: AppColors.greyColor),
+                          focusColor: AppColors.primaryColor,
+                          prefixIcon: Icon(
+                            CupertinoIcons.search,
+                            color: AppColors.greyColor,
                           ),
                         ),
                       ),
-                      SizedBox(height: 20.h),
-                      Expanded(
-                        child: BlocBuilder<HomeViewModel, HomeStates>(
-                          builder: (context, state) {
-                            if (state is getNotesloadingStateHomeState) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (state is getNoteserrorStateHomeState) {
-                              return Center(child: Text("error"));
-                            } else
-                              return GridView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: viewModel.notesList.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 10.w,
-                                      mainAxisSpacing: 10.h,
-                                    ),
-                                itemBuilder: (context, index) {
-                                  return NoteWidget(
-                                    note: viewModel.notesList[index],
-                                  );
-                                },
+                    ),
+                    SizedBox(height: 20.h),
+                    Expanded(
+                      child: BlocBuilder<HomeViewModel, HomeStates>(
+                        bloc: HomeViewModel.get(context)..getAllNotes(),
+                        builder: (context, state) {
+                          if (state is getNotesloadingStateHomeState) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state
+                              is getNoteserrorStateHomeState) {
+                            print(state.error.toString());
+                            return Center(child: Text(state.error.toString()));
+                          } else if (state
+                              is getNotessuccesStateHomeState) {
+                            final notes = state.noteModel;
+                            if (notes.isEmpty) {
+                              return Center(
+                                child: Text("No notes found"),
                               );
-                          },
-                        ),
+                            }
+
+                            return GridView.builder(
+                              scrollDirection: Axis.horizontal,
+
+                              itemCount: notes.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 35.w,
+                                    mainAxisSpacing: 35.h,
+                                    childAspectRatio:0.6,
+                                  ),
+                              itemBuilder: (context, index) {
+                                return NoteWidget(note: notes[index]);
+                              },
+                            );
+                          } else {
+                            return SizedBox();
+                          }
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -138,9 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            builder: (context) => AddTaskBottomSheet(),
+            builder: (context) => NoteBottomSheet(methodName: "add"),
           );
-          viewModel.getAllNotes();
+          // HomeViewModel.get(context)..getAllNotes();
         },
         child: Icon(CupertinoIcons.add, color: AppColors.primaryColor),
       ),

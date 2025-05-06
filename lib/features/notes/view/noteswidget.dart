@@ -1,3 +1,4 @@
+import 'package:abs_task/core/Note_bottom_sheet.dart';
 import 'package:abs_task/core/my_colors.dart';
 import 'package:abs_task/features/home/cubit/homeViewModel.dart';
 import 'package:abs_task/features/notes/cubit/NotesViewModel.dart';
@@ -7,49 +8,76 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class NoteWidget extends StatefulWidget {
-   NoteWidget({super.key,required this.note});
-NoteModel note;
+class NoteWidget extends StatelessWidget {
+  NoteWidget({super.key, required this.note});
 
-  @override
-  State<NoteWidget> createState() => _NoteWidgetState();
-}
-
-class _NoteWidgetState extends State<NoteWidget> {
-
+  NoteModel note;
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<HomeViewModel>();
     return Container(
-      height: 100.h,
-      width: 350.w,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: AppColors.primaryColor),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.note.title!,style: TextStyle(fontSize: 15,fontWeight:FontWeight.bold ),),
+                Text(
+                  note.title!,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 Container(
                   child: Row(
                     children: [
-                      IconButton(onPressed: () {
-                        viewModel.deleteNote(widget.note.id!
-                        );
-                      }, icon: Icon(CupertinoIcons.delete,color: AppColors.greyColor,size:15 ,)
-                      ),  IconButton(onPressed: () { }, icon: Icon(Icons.edit,color: AppColors.greyColor,size:15 ,)
+                      IconButton(
+                        onPressed: () {
+                          NoteViewModel.get(context).deleteNote(note.id!);
+                        },
+                        icon: Icon(
+                          CupertinoIcons.delete,
+                          color: AppColors.greyColor,
+                          size: 15,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) => NoteBottomSheet(methodName: 'update',id:note.id),
+                          );
+
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                          color: AppColors.greyColor,
+                          size: 15,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            Text(widget.note.description!)
+            SizedBox(height: 30.h,),
+            Text(note.description!),
           ],
         ),
       ),

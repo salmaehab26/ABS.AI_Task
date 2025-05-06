@@ -3,6 +3,7 @@ import 'package:abs_task/core/AppRoutes.dart';
 import 'package:abs_task/features/auth/cubit/AuthViewModel.dart';
 import 'package:abs_task/features/home/cubit/homeViewModel.dart';
 import 'package:abs_task/features/home/view/homeScreen.dart';
+import 'package:abs_task/features/notes/cubit/NotesViewModel.dart';
 import 'package:abs_task/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,6 +19,7 @@ Future<void> main() async {
         providers: [
           BlocProvider(create: (_) => AuthViewModel(FirebaseAuth.instance)),
           BlocProvider(create: (_) => HomeViewModel()),
+          BlocProvider(create: (_) => NoteViewModel()),
         ],
         child: MyApp(),
 

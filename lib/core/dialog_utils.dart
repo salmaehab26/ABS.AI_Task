@@ -1,5 +1,6 @@
 import 'package:abs_task/core/my_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class DialogUtil {
@@ -14,7 +15,7 @@ class DialogUtil {
               children: [
                 CircularProgressIndicator(),
                 SizedBox(
-                  width: 12,
+                  width: 100.w,
                 ),
                 Text(message,style: Theme.of(context).textTheme.titleMedium,),
               ],

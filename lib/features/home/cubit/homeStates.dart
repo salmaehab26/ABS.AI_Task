@@ -30,7 +30,6 @@ class getNotesinitStateHomeState extends HomeStates{
 }
 
 class getNotesloadingStateHomeState extends HomeStates{}
-class getNotesupdateStateHomeState extends HomeStates{}
 class getNoteserrorStateHomeState extends HomeStates{
   String error;
   getNoteserrorStateHomeState({required this.error});
@@ -38,4 +37,5 @@ class getNoteserrorStateHomeState extends HomeStates{
 
 class getNotessuccesStateHomeState extends HomeStates{
   List<NoteModel> noteModel;
+
   getNotessuccesStateHomeState({required this.noteModel});}

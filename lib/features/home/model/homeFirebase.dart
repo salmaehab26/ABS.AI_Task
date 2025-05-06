@@ -30,23 +30,13 @@ class HomeFirebase {
   //   return FirebaseFirestore.instance.collectionGroup("Notes").snapshots();
   // }
 
+   Future<void> updateNote(NoteModel note, String uId) async {
+     final docRef = getNotesCollection(uId).doc(note.id);
+     await docRef.update(note.toJson());
+   }
 
-   Future<void> updatenote(NoteModel note, String uId) {
-    return getNotesCollection(uId).doc(note.id).update(note.toJson());
-  }
    Future<void> deleteNote(String id, String uId) {
     return getNotesCollection(uId).doc(id).delete();
   }
-  static CollectionReference<MyUser> getUsersCollection() {
-    return FirebaseFirestore.instance
-        .collection(MyUser.collectionName)
-        .withConverter<MyUser>(
-        fromFirestore: (snapshot, options) =>
-            MyUser.fromFireStore(snapshot.data()),
-        toFirestore: (user, options) => user.toFireStore());
-  }
-  static Future<MyUser?> readUserFromFireStore(String uId) async {
-    var querySnapShot = await getUsersCollection().doc(uId).get();
-    return querySnapShot.data();
-  }
+
 }
